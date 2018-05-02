@@ -48,7 +48,7 @@ char* instruction_1[44] = {
 
 // Obstacle road
 char* road[5] = {
-    "_____"   
+    "     "   
     // "    ######    ################        #################         #############   ####"   
 };
 
@@ -76,8 +76,13 @@ char* statistics[35] = {
 };
 
 // Goodluck, Space to jump
-char* goodluckMessage[] = {
+char* goodluckMessage[60] = {
     "G o o d   l u c k   ( u s e   < S P A C E >   to   j u m p )"
+};
+
+// Other information
+char* otherInformation[] ={
+    "y ,   R E T : s t a r t   g a m e     q : q u i t     c : s h o w   c o p y r i g h t     w : s h o w   w a r r a n t y     s : s h o w   s c o r e s     r : r e d r a w"
 };
 
 
@@ -116,7 +121,7 @@ int main(){
 
 // FUNCTIONS
 void print_road(WINDOW *main_win){
-    for(int x = 0; x < screenWidth; x++) {
+    for(int x = 0; x < screenWidth-4; x++) {
         mvwprintw(main_win, screenHeight-3, x, "%c", '#');
         mvwprintw(main_win, screenHeight-2, x, "%c", '#');
     }
@@ -136,6 +141,7 @@ void previewscreen(WINDOW *main_win){
         drawImage(main_win, screenHeight-40, screenWidth*(int) 1.0/4.0, homeScreen, 19, 84);
         drawImage(main_win, screenHeight-9, screenWidth*(int) 3.0/4.0, rccar, 6, 8);
         drawImage(main_win, screenHeight-9, screenWidth*(int) 3.0/4.0, rccar, 6, 8);
+        drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/24.0, otherInformation, 1, 169);
         print_road(main_win);            
         wrefresh(main_win);
         if(blink%2 == 0){
@@ -174,6 +180,7 @@ int mainloop(WINDOW *main_win){
         if(rc_state == 0 && movement <= (screenWidth*(int) 3.0/4.0) + 5 && movement >= (screenWidth*(int) 3.0/4.0)){ // dead game
             break;
         }
+
         rc_state = render_and_move_car(main_win, rc_state);
         wrefresh(main_win);
 
@@ -231,6 +238,8 @@ void drawImage(WINDOW *main_win, int y, int x, char **arr, int h, int w) {
 */
 void gameover(WINDOW *main_win){
     int blink = 0;
+    char ch;
+
     while(1){
         print_road(main_win);                    
         wrefresh(main_win);        
@@ -238,6 +247,10 @@ void gameover(WINDOW *main_win){
             drawImage(main_win, screenHeight-20, screenWidth*(int) 2.0/4.0, gameoverScreen, 1, 18);        
         }else{
             wclear(main_win);                
+        }
+        ch = getch();
+        if(ch == 'q'){
+            break;
         }
         usleep(1000*200);        
         blink++;
