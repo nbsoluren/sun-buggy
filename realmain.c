@@ -175,9 +175,19 @@ int mainloop(WINDOW *main_win){
         if(rc_state == 0 && movement <= (screenWidth*(int) 3.0/4.0) + 5 && movement >= (screenWidth*(int) 3.0/4.0)){ // dead game
             break;
         }
-        if(rc_state == 0 && movement <= (screenWidth*(int) 3.0/4.0) + 5 && movement >= (screenWidth*(int) 3.0/4.0)){ // dead game
+
+        if(rc_state == 0 && mov[1] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[1] >= (screenWidth*(int) 3.0/4.0)){ // dead game
             break;
         }
+
+        if(rc_state == 0 && mov[2] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[2] >= (screenWidth*(int) 3.0/4.0)){ // dead game
+            break;
+        }
+
+        if(rc_state == 0 && mov[3] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[3] >= (screenWidth*(int) 3.0/4.0)){ // dead game
+            break;
+        }
+
         rc_state = render_and_move_car(main_win, rc_state);
         wrefresh(main_win);
 
