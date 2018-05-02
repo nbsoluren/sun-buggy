@@ -4,9 +4,9 @@
 int screenHeight;
 int screenWidth;
 float movement = 0;
+float mov[3] = {1,2,3};
 
-
-// UI 
+// UI
 
 // Race car
 char* rccar[6] = {
@@ -15,8 +15,9 @@ char* rccar[6] = {
     "    o   ",
     " 00 o 00",
     "    o   ",
-    "    o   "    
+    "    o   "
 };
+
 
 // Sun Buggy title screen
 char* homeScreen[84] = {
@@ -38,7 +39,7 @@ char* homeScreen[84] = {
     "             B        B    U        U    G          G    G          G        Y      ",
     "             B        B    U        U    G         G     G         G        Y       ",
     "             B B B B B      U U U U        G G G G         G G G G       Y Y        ",
-    "                                                                                    ",    
+    "                                                                                    ",
 };
 
 // Press space to play
@@ -48,8 +49,8 @@ char* instruction_1[44] = {
 
 // Obstacle road
 char* road[5] = {
-    "     "   
-    // "    ######    ################        #################         #############   ####"   
+    "_____"
+    // "    ######    ################        #################         #############   ####"
 };
 
 // Upper right corner text
@@ -115,7 +116,7 @@ int main(){
     mainloop(main_win);
     gameover(main_win);
     endwin();
-  
+
 }
 
 
@@ -127,17 +128,17 @@ void print_road(WINDOW *main_win){
     }
 }
 
-/* 
+/*
     Flash title screen
     while player does not press
-    space bar 
+    space bar
 */
 void previewscreen(WINDOW *main_win){
     char ch;
     int blink = 0;
 
     while(ch != ' '){
-        drawImage(main_win, screenHeight-50, screenWidth*(int) 0.0/4.0, readMe, 4, 66); 
+        drawImage(main_win, screenHeight-50, screenWidth*(int) 0.0/4.0, readMe, 4, 66);
         drawImage(main_win, screenHeight-40, screenWidth*(int) 1.0/4.0, homeScreen, 19, 84);
         drawImage(main_win, screenHeight-9, screenWidth*(int) 3.0/4.0, rccar, 6, 8);
         drawImage(main_win, screenHeight-9, screenWidth*(int) 3.0/4.0, rccar, 6, 8);
@@ -146,12 +147,12 @@ void previewscreen(WINDOW *main_win){
         wrefresh(main_win);
         if(blink%2 == 0){
             drawImage(main_win, screenHeight-20, screenWidth*(int) 2.0/4.0, instruction_1, 1, 44);
-        }    
+        }
         ch = getch();
     }
 }
 
-/* 
+/*
     Main game
 */
 int mainloop(WINDOW *main_win){
@@ -171,13 +172,25 @@ int mainloop(WINDOW *main_win){
             if(ch == ' ' && rc_state == 0){
                 rc_state = 1;
                 goodluck_checker = 1;
-            } 
+            }
             if(ch == 'q') break;
         } while(ch != ERR);
 
         if(ch == 'q') break; // quit game
 
         if(rc_state == 0 && movement <= (screenWidth*(int) 3.0/4.0) + 5 && movement >= (screenWidth*(int) 3.0/4.0)){ // dead game
+            break;
+        }
+
+        if(rc_state == 0 && mov[1] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[1] >= (screenWidth*(int) 3.0/4.0)){ // dead game
+            break;
+        }
+
+        if(rc_state == 0 && mov[2] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[2] >= (screenWidth*(int) 3.0/4.0)){ // dead game
+            break;
+        }
+
+        if(rc_state == 0 && mov[3] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[3] >= (screenWidth*(int) 3.0/4.0)){ // dead game
             break;
         }
 
@@ -193,14 +206,28 @@ int mainloop(WINDOW *main_win){
 */
 int render_and_move_car(WINDOW *main_win, int rc_state) {
     int ground = screenHeight-3-6;
-    
+
+
+      for (int i = 0; i<3; i++){
+        drawImage(main_win, screenHeight-3, mov[i],road,1,5);
+        if(i == 1) mov[i] += 3;
+        if(i == 2) mov[i] += 4;
+        if(i == 3) mov[i] += 6;
+
+        if(mov[i] >= screenWidth){
+            mov[i] = 0;
+        }
+
+      }
+
      drawImage(main_win, screenHeight-3, movement, road, 1, 5);
      drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, statistics, 1, 35);
-    
+
      movement += 5;
      if(movement >= screenWidth){
          movement = 0;
      }
+
 
     switch(rc_state){
         case 0:
@@ -226,11 +253,11 @@ int render_and_move_car(WINDOW *main_win, int rc_state) {
     Drawing Images
 */
 void drawImage(WINDOW *main_win, int y, int x, char **arr, int h, int w) {
-    for (int current_y = 0; current_y < h; current_y++) 
+    for (int current_y = 0; current_y < h; current_y++)
         for (int current_x = 0; current_x < w; current_x++){
             mvwprintw(main_win,current_y + y, current_x + x, "%c", arr[current_y][current_x]);
         }
-        
+
 }
 
 /*
@@ -241,12 +268,12 @@ void gameover(WINDOW *main_win){
     char ch;
 
     while(1){
-        print_road(main_win);                    
-        wrefresh(main_win);        
+        print_road(main_win);
+        wrefresh(main_win);
         if(blink%5 == 0){
-            drawImage(main_win, screenHeight-20, screenWidth*(int) 2.0/4.0, gameoverScreen, 1, 18);        
+            drawImage(main_win, screenHeight-20, screenWidth*(int) 2.0/4.0, gameoverScreen, 1, 18);
         }else{
-            wclear(main_win);                
+            wclear(main_win);
         }
         ch = getch();
         if(ch == 'q'){
