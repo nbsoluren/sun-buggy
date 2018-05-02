@@ -5,6 +5,10 @@ int screenHeight;
 int screenWidth;
 float movement = 0;
 
+
+// UI 
+
+// Race car
 char* rccar[6] = {
     "    o   ",
     "    o   ",
@@ -14,6 +18,7 @@ char* rccar[6] = {
     "    o   "    
 };
 
+// Sun Buggy title screen
 char* homeScreen[84] = {
     "  S S S S    U         U    N N        N                                            ",
     "S            U         U    N  N       N                                            ",
@@ -36,14 +41,18 @@ char* homeScreen[84] = {
     "                                                                                    ",    
 };
 
+// Press space to play
 char* instruction_1[44] = {
     " P r e s s   S p a c e   T o   P l a y . . .",
 };
 
-char* road[84] = {
-    "    ######    ################        #################         #############   ####"   
+// Obstacle road
+char* road[5] = {
+    "_____"   
+    // "    ######    ################        #################         #############   ####"   
 };
 
+// Upper right corner text
 char* readMe[66] = {
     "Sun-Buggy version 1.0.00, Copyright 2018.                         ",
     "Sun-Buggy comes with ABSOLUTELY NO WARRANTY; for details type 'w'.",
@@ -51,18 +60,28 @@ char* readMe[66] = {
     "under certain conditions: type 'c' for details                    "
 };
 
+// Game Over
 char* gameoverScreen[18] = {
     " G A M E   O V E R"
 };
 
+// Blank
 char* blank[1] = {
     " "
 };
 
+// Level/Lives/Score
 char* statistics[35] = {
     "Level: 1    Lives: 3    Score: 0   "
 };
 
+// Goodluck, Space to jump
+char* goodluckMessage[] = {
+    "G o o d   l u c k   ( u s e   < S P A C E >   to   j u m p )"
+};
+
+
+// FUNCTION PROTOTYPES
 void print_road(WINDOW *main_win);
 void previewscreen(WINDOW *main_win);
 int mainloop(WINDOW *main_win);
@@ -70,6 +89,7 @@ int render_and_move_car(WINDOW *main_win, int rc_state);
 void drawImage(WINDOW *window, int y, int x, char **arr, int h, int w);
 void gameover();
 
+// MAIN FUNCTION
 int main(){
 
     WINDOW *main_win;
@@ -94,6 +114,7 @@ int main(){
 }
 
 
+// FUNCTIONS
 void print_road(WINDOW *main_win){
     for(int x = 0; x < screenWidth; x++) {
         mvwprintw(main_win, screenHeight-3, x, "%c", '#');
@@ -101,6 +122,11 @@ void print_road(WINDOW *main_win){
     }
 }
 
+/* 
+    Flash title screen
+    while player does not press
+    space bar 
+*/
 void previewscreen(WINDOW *main_win){
     char ch;
     int blink = 0;
@@ -119,22 +145,35 @@ void previewscreen(WINDOW *main_win){
     }
 }
 
+/* 
+    Main game
+*/
 int mainloop(WINDOW *main_win){
-    int rc_state = 0;
+    int rc_state = 0, goodluck_checker = 0;
     char ch;
 
     while(1){
         wclear(main_win);
         print_road(main_win);
 
+        if(goodluck_checker == 0){
+            drawImage(main_win, screenHeight-20, screenWidth*(int) 2.0/4.0, goodluckMessage, 1, 60);
+        }
+
         do{
             ch = getch();
-            if(ch == ' ' && rc_state == 0) rc_state = 1;
+            if(ch == ' ' && rc_state == 0){
+                rc_state = 1;
+                goodluck_checker = 1;
+            } 
             if(ch == 'q') break;
         } while(ch != ERR);
 
-        if(ch == 'q') break;
+        if(ch == 'q') break; // quit game
 
+        if(rc_state == 0 && movement <= (screenWidth*(int) 3.0/4.0) + 5 && movement >= (screenWidth*(int) 3.0/4.0)){ // dead game
+            break;
+        }
         rc_state = render_and_move_car(main_win, rc_state);
         wrefresh(main_win);
 
@@ -142,14 +181,17 @@ int mainloop(WINDOW *main_win){
     }
 }
 
+/*
+    Race car movement (jump)
+*/
 int render_and_move_car(WINDOW *main_win, int rc_state) {
     int ground = screenHeight-3-6;
     
-     drawImage(main_win, screenHeight-3, movement, road, 1, 84);
+     drawImage(main_win, screenHeight-3, movement, road, 1, 5);
      drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, statistics, 1, 35);
     
      movement += 5;
-     if(movement==200){
+     if(movement >= screenWidth){
          movement = 0;
      }
 
@@ -173,6 +215,9 @@ int render_and_move_car(WINDOW *main_win, int rc_state) {
     }
 }
 
+/*
+    Drawing Images
+*/
 void drawImage(WINDOW *main_win, int y, int x, char **arr, int h, int w) {
     for (int current_y = 0; current_y < h; current_y++) 
         for (int current_x = 0; current_x < w; current_x++){
@@ -181,6 +226,9 @@ void drawImage(WINDOW *main_win, int y, int x, char **arr, int h, int w) {
         
 }
 
+/*
+    Flash Game Over screen
+*/
 void gameover(WINDOW *main_win){
     int blink = 0;
     while(1){
