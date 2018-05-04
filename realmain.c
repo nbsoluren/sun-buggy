@@ -1,10 +1,16 @@
 #include <ncurses.h>
 #include <time.h> //this is for the nanosleep
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+
+
 int screenHeight;
 int screenWidth;
 float movement = 0;
 float mov[3] = {1,2,3};
+int score=0;
+char charscore[10];
 
 // UI
 
@@ -71,10 +77,7 @@ char* blank[1] = {
     " "
 };
 
-// Level/Lives/Score
-char* statistics[35] = {
-    "Level: 1    Lives: 3    Score: 0   "
-};
+char statistics[100];
 
 // Goodluck, Space to jump
 char* goodluckMessage[60] = {
@@ -93,7 +96,7 @@ void previewscreen(WINDOW *main_win);
 int mainloop(WINDOW *main_win);
 int render_and_move_car(WINDOW *main_win, int rc_state);
 void drawImage(WINDOW *window, int y, int x, char **arr, int h, int w);
-void gameover();
+void gameover(WINDOW *main_win);
 
 // MAIN FUNCTION
 int main(){
@@ -143,7 +146,7 @@ void previewscreen(WINDOW *main_win){
         drawImage(main_win, screenHeight-9, screenWidth*(int) 3.0/4.0, rccar, 6, 8);
         drawImage(main_win, screenHeight-9, screenWidth*(int) 3.0/4.0, rccar, 6, 8);
         drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/24.0, otherInformation, 1, 169);
-        print_road(main_win);            
+        print_road(main_win);
         wrefresh(main_win);
         if(blink%2 == 0){
             drawImage(main_win, screenHeight-20, screenWidth*(int) 2.0/4.0, instruction_1, 1, 44);
@@ -196,6 +199,7 @@ int mainloop(WINDOW *main_win){
 
         rc_state = render_and_move_car(main_win, rc_state);
         wrefresh(main_win);
+        score++;
 
         usleep(1000*200);
     }
@@ -210,9 +214,9 @@ int render_and_move_car(WINDOW *main_win, int rc_state) {
 
       for (int i = 0; i<3; i++){
         drawImage(main_win, screenHeight-3, mov[i],road,1,5);
-        if(i == 1) mov[i] += 3;
-        if(i == 2) mov[i] += 4;
-        if(i == 3) mov[i] += 6;
+        if(i == 1) mov[i] += 9;
+        if(i == 2) mov[i] += 10;
+        if(i == 3) mov[i] += 11;
 
         if(mov[i] >= screenWidth){
             mov[i] = 0;
@@ -221,7 +225,10 @@ int render_and_move_car(WINDOW *main_win, int rc_state) {
       }
 
      drawImage(main_win, screenHeight-3, movement, road, 1, 5);
-     drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, statistics, 1, 35);
+
+     // drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, statistics[0], 1, 35);
+     sprintf(statistics, "Life: 3, Level: 1, Score: %d", score);
+     mvwprintw(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, "%s", statistics);
 
      movement += 5;
      if(movement >= screenWidth){
@@ -279,7 +286,7 @@ void gameover(WINDOW *main_win){
         if(ch == 'q'){
             break;
         }
-        usleep(1000*200);        
+        usleep(1000*200);
         blink++;
     }
 }
