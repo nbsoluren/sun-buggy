@@ -9,8 +9,10 @@ int screenHeight;
 int screenWidth;
 float movement = 0;
 float mov[3] = {1,2,3};
-int score=0;
+int score= 0;
 char charscore[10];
+int level = 0;
+int life = 3;
 
 // UI
 
@@ -182,24 +184,30 @@ int mainloop(WINDOW *main_win){
         if(ch == 'q') break; // quit game
 
         if(rc_state == 0 && movement <= (screenWidth*(int) 3.0/4.0) + 5 && movement >= (screenWidth*(int) 3.0/4.0)){ // dead game
-            break;
+            life--;
         }
 
         if(rc_state == 0 && mov[1] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[1] >= (screenWidth*(int) 3.0/4.0)){ // dead game
-            break;
+            life--;
         }
 
         if(rc_state == 0 && mov[2] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[2] >= (screenWidth*(int) 3.0/4.0)){ // dead game
-            break;
+            life--;
         }
 
         if(rc_state == 0 && mov[3] <= (screenWidth*(int) 3.0/4.0) + 5 && mov[3] >= (screenWidth*(int) 3.0/4.0)){ // dead game
-            break;
+            life--;
         }
+
+        if(life==0) break;
+
+
 
         rc_state = render_and_move_car(main_win, rc_state);
         wrefresh(main_win);
         score++;
+        if(score%100==0) level ++;
+
 
         usleep(1000*200);
     }
@@ -214,9 +222,9 @@ int render_and_move_car(WINDOW *main_win, int rc_state) {
 
       for (int i = 0; i<3; i++){
         drawImage(main_win, screenHeight-3, mov[i],road,1,5);
-        if(i == 1) mov[i] += 9;
-        if(i == 2) mov[i] += 10;
-        if(i == 3) mov[i] += 11;
+        if(i == 1) mov[i] += 9+level;
+        if(i == 2) mov[i] += 10+level;
+        if(i == 3) mov[i] += 11+level;
 
         if(mov[i] >= screenWidth){
             mov[i] = 0;
@@ -227,7 +235,7 @@ int render_and_move_car(WINDOW *main_win, int rc_state) {
      drawImage(main_win, screenHeight-3, movement, road, 1, 5);
 
      // drawImage(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, statistics[0], 1, 35);
-     sprintf(statistics, "Life: 3, Level: 1, Score: %d", score);
+     sprintf(statistics, "Life: 3, Level: %d, Score: %d", level, score);
      mvwprintw(main_win, screenHeight-1, screenWidth*(int) 2.0/5.0, "%s", statistics);
 
      movement += 5;
