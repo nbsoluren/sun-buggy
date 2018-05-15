@@ -18,7 +18,6 @@
 void draw_line(int col, int row);
 void print_road();
 void print_HomeScreen();
-void print_buggy();
 void print_jump_buggy();
 void print_obstacles();
 void print_game_over();
@@ -27,11 +26,15 @@ void level_up();
 void check_jump();
 void save_score();
 void sort_high_scores();
+void print_dead_buggy();
 
 // GLOBAL VARIABLES
 char keypress;
 int speed = 5;
 int obstacle = 0;
+int obstacle3 = 35;
+
+
 int lives = 3;
 int level = 1;
 int score = 0;
@@ -39,6 +42,9 @@ int progress = 0;
 int y = 20;
 int blink = 0;
 int highscore[3] = {0,0,0};
+int carAni = 0;
+int boost;
+
 
 // MAIN FUNCTION
 int main(){
@@ -47,6 +53,7 @@ int main(){
 
   do{ // run the game
 
+    boost=level;
     // Wait for the user to press space
     while(keypress != jump_key){
       print_HomeScreen(); // print sunbuggy home screen
@@ -68,7 +75,8 @@ int main(){
       }
 
       if(keypress == jump_key){ // if user jumps
-        y--; // decrease y
+        if(y>18)
+          y--; // decrease y
       }else if(y<20){
         y++;
       }else if(keypress == quit_key || lives == 0){
@@ -82,7 +90,7 @@ int main(){
 
       check_jump();
 
-      print_obstacles(obstacle);
+      print_obstacles();
       delay(speed);
       score++;
       level_up();
@@ -143,9 +151,18 @@ void save_score(){
 }
 
 void check_jump(){
-  if(y == 20 && obstacle == 60){
+  if(y == 20 && obstacle == 60 )
     lives --;
-  }
+  else if(y == 20 && obstacle == 61 )
+    lives --;
+
+
+
+  if(y == 20 && obstacle3 == 60)
+    lives --;
+  else if(y == 20 && obstacle3 == 61 )
+    lives --;
+
 }
 
 void level_up(){
@@ -172,6 +189,7 @@ void print_game_over(){
   textcolor(RED);
   gotoxy(31, 17);
   printf("G A M E  O V E R !\n");
+  print_dead_buggy();
 
   keypress = '*';
 
@@ -182,6 +200,9 @@ void print_game_over(){
   if(keypress == restart_key){
     speed = 5;
     obstacle = 0;
+
+    obstacle3 = 35;
+
     lives = 3;
     score = 0;
     level = 1;
@@ -193,21 +214,51 @@ void print_game_over(){
 }
 
 void print_obstacles(){
+  //obstacle 1
   gotoxy(obstacle, 22);
-  textcolor(RED);
-  printf("_");
-  if(obstacle == 72){
+  textcolor(YELLOW);
+  printf("^1^");
+  if(obstacle >= 72){
     obstacle = 0;
   }else{
-    obstacle ++;
+    obstacle += (1+boost);
   }
+
+  //obstacle 3
+  gotoxy(obstacle3, 22);
+  textcolor(YELLOW);
+  printf("^2^");
+  if(obstacle3 >= 72){
+    obstacle3 = 0;
+  }else{
+    obstacle3 += (1+(boost-1)*3);
+  }
+
 }
 
 void print_jump_buggy(){
-  gotoxy(60,y);
-  printf(" |  |\n");
-  gotoxy(60,y+1);
-  printf("O---O\n");
+  if(carAni){
+    gotoxy(60,y); textcolor(LIGHTRED);
+    printf(" ||||\n");
+    gotoxy(60,y+1); textcolor(RED);
+    printf("O---O\n");
+    carAni = 0;
+  }else{
+    gotoxy(60,y); textcolor(RED);
+    printf(" ||||\n");
+    gotoxy(60,y+1); textcolor(LIGHTRED);
+    printf("/---/\n");
+    carAni = 1;
+  }
+}
+
+
+void print_dead_buggy(){
+    gotoxy(50,y); textcolor(RED);
+    printf(" /////|^^^***||^|\n");
+    gotoxy(50,y+1); textcolor(RED);
+    printf("0....*^^---^^^^O\n");
+    carAni = 0;
 }
 
 void print_HomeScreen(){
@@ -261,12 +312,6 @@ void print_HomeScreen(){
   print_road();
 }
 
-void print_buggy(){
-  gotoxy(60,20);
-  printf(" |  |\n");
-  gotoxy(60,21);
-  printf("O---O\n");
-}
 
 void print_road(){
     textcolor(LIGHTRED);
