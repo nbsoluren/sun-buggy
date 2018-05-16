@@ -44,6 +44,8 @@ int blink = 0;
 int highscore[3] = {0,0,0};
 int carAni = 0;
 int boost;
+int hit = 0;
+int subtractor = 0;
 
 
 // MAIN FUNCTION
@@ -75,10 +77,8 @@ int main(){
       }
 
       if(keypress == jump_key){ // if user jumps
-        if(y>18)
-          y--; // decrease y
-      }else if(y<20){
-        y++;
+        if(hit==0)
+          hit=1; // decrease y ///////////////////////////////////////////////////
       }else if(keypress == quit_key || lives == 0){
         save_score();
         print_game_over();
@@ -155,8 +155,6 @@ void check_jump(){
     lives --;
   else if(y == 20 && obstacle == 61 )
     lives --;
-
-
 
   if(y == 20 && obstacle3 == 60)
     lives --;
@@ -237,6 +235,42 @@ void print_obstacles(){
 }
 
 void print_jump_buggy(){
+  switch(hit){
+      case 0:
+          hit = 0;
+          y = 20;
+          break;
+      case 1:
+          hit = 2;
+          y = 19;
+          break;
+      case 2:
+          hit = 3;
+          y = 18;
+          break;
+      case 3:
+          hit = 4;
+          y = 17;
+          break;
+      case 4:
+          hit = 5;
+          y = 16;
+          break;
+      case 5:
+          hit = 6;
+          y = 17;
+          break;
+      case 6:
+          hit = 7;
+          y = 18;
+          break;
+      case 7:
+          hit = 0;
+          y = 19;
+          break;
+      default:
+          break;
+  }
   if(carAni){
     gotoxy(60,y); textcolor(LIGHTRED);
     printf(" ||||\n");
@@ -250,6 +284,7 @@ void print_jump_buggy(){
     printf("/---/\n");
     carAni = 1;
   }
+
 }
 
 
