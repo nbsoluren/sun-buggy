@@ -31,12 +31,13 @@ void print_stars();
 
 // GLOBAL VARIABLES
 char keypress;
+char catcher;
 int speed = 5;
 int obstacle = 0;
 int obstacle3 = 35;
 
 
-int lives = 3;
+int lives = 5;
 int level = 1;
 int score = 0;
 int progress = 0;
@@ -45,6 +46,8 @@ int blink = 0;
 int highscore[3] = {0,0,0};
 int carAni = 0;
 int boost;
+int hit = 0;
+int subtractor = 0;
 
 
 // MAIN FUNCTION
@@ -76,14 +79,16 @@ int main(){
       }
 
       if(kb_ready()){ // get sunbuggy movement
-        keypress=(char)getch();
+        if(y == 20){
+          keypress=(char)getch();
+        }else{
+          catcher=(char)getch();
+        }
       }
 
       if(keypress == jump_key){ // if user jumps
-        if(y>18)
-          y--; // decrease y
-      }else if(y<20){
-        y++;
+        if(hit==0)
+          hit=1; // decrease y ///////////////////////////////////////////////////
       }else if(keypress == quit_key || lives == 0){
         save_score();
         print_game_over();
@@ -148,6 +153,8 @@ void sort_high_scores(){
 void save_score(){
   int i = 0;
 
+  print_stars();
+
   clrscr();
 
   if(highscore[0] == 0 || highscore[1] == 0 || highscore[2] == 0){
@@ -182,18 +189,26 @@ void save_score(){
 }
 
 void check_jump(){
-  if(y == 20 && obstacle == 60 )
-    lives --;
-  else if(y == 20 && obstacle == 61 )
-    lives --;
-
-
-
-  if(y == 20 && obstacle3 == 60)
-    lives --;
-  else if(y == 20 && obstacle3 == 61 )
+  if(y == 20 && obstacle == 60 ){
+    gotoxy(60,y-1);
+    printf("O U C H !!!");
     lives --;
 
+  }else if(y == 20 && obstacle == 61 ){
+    gotoxy(60,y-1);
+    printf("O U C H !!!");
+    lives --;
+  }
+
+  if(y == 20 && obstacle3 == 60){
+    gotoxy(60,y-1);
+    printf("O U C H !!!");
+    lives --;
+  }else if(y == 20 && obstacle3 == 61 ){
+    gotoxy(60,y-1);
+    printf("O U C H !!!");
+    lives --;
+  }
 }
 
 void level_up(){
@@ -210,7 +225,6 @@ void print_statistices(){
 }
 
 void print_game_over(){
-  print_stars();
 
   gotoxy(30, 19);
   printf("press 'r' to restart\n");
@@ -235,7 +249,7 @@ void print_game_over(){
 
     obstacle3 = 35;
 
-    lives = 3;
+    lives = 5;
     score = 0;
     level = 1;
     main();
@@ -283,15 +297,15 @@ void print_jump_buggy(){
       printf("/---/\n");
       carAni = 1;
     }
-  }else{
+  }else if(level < 6){
     if(carAni == 0){
-      gotoxy(60,y); textcolor(LIGHTRED);
+      gotoxy(60,y-1); textcolor(LIGHTRED);
       printf("  <___>");
       gotoxy(60,y+1); textcolor(RED);
       printf("(|)---(|)");
       carAni++;
     }else if(carAni == 1){
-      gotoxy(60,y); textcolor(LIGHTRED);
+      gotoxy(61,y); textcolor(LIGHTRED);
       printf("  <___>");
       gotoxy(60,y+1); textcolor(RED);
       printf("(\\)---(\\)");
@@ -309,15 +323,87 @@ void print_jump_buggy(){
       printf("(/)---(/)");
       carAni = 0;
     }
-
+  }else{
+    if(carAni == 0){
+      gotoxy(60,y-1); textcolor(YELLOW);
+      printf(" |     | ");
+      gotoxy(60,y); textcolor(RED);
+      printf("<|^^^^^|>");
+      gotoxy(60,y+1); textcolor(BLUE);
+      printf("(|)---(|)");
+      carAni++;
+    }else if(carAni == 1){
+      gotoxy(60,y-1); textcolor(RED);
+      printf(" |^^^^^| ");
+      gotoxy(60,y); textcolor(LIGHTRED);
+      printf("<|*****|>");
+      gotoxy(60,y+1); textcolor(BLUE);
+      printf("(\\)---(\\)");
+      carAni++;
+    }else if(carAni == 3){
+      gotoxy(60,y-2); textcolor(RED);
+      printf("  ^^^^^");
+      gotoxy(60,y-1); textcolor(LIGHTRED);
+      printf(" |*****| ");
+      gotoxy(60,y); textcolor(YELLOW);
+      printf("<|*****|>");
+      gotoxy(60,y+1); textcolor(BLUE);
+      printf("(-)---(-)");
+      carAni++;
+    }else{
+      gotoxy(60,y-2); textcolor(RED);
+      printf("  ^^^^^ ");
+      gotoxy(60,y-1); textcolor(RED);
+      printf(" |*****| ");
+      gotoxy(60,y); textcolor(RED);
+      printf("<|*****|>");
+      gotoxy(60,y+1); textcolor(RED);
+      printf("(/)---(/)");
+      carAni = 0;
+    }
   }
-
+    switch(hit){
+        case 0:
+            hit = 0;
+            y = 20;
+            break;
+        case 1:
+            hit = 2;
+            y = 19;
+            break;
+        case 2:
+            hit = 3;
+            y = 18;
+            break;
+        case 3:
+            hit = 4;
+            y = 17;
+            break;
+        case 4:
+            hit = 5;
+            y = 16;
+            break;
+        case 5:
+            hit = 6;
+            y = 17;
+            break;
+        case 6:
+            hit = 7;
+            y = 18;
+            break;
+        case 7:
+            hit = 0;
+            y = 19;
+            break;
+        default:
+            break;
+    }
 }
 
 void print_dead_buggy(){
-    gotoxy(50,y); textcolor(RED);
+    gotoxy(60,y); textcolor(RED);
     printf(" /////|^^^***||^|\n");
-    gotoxy(50,y+1); textcolor(RED);
+    gotoxy(60,y+1); textcolor(RED);
     printf("0....*^^---^^^^O\n");
     carAni = 0;
 }
