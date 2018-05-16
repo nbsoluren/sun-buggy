@@ -27,6 +27,7 @@ void check_jump();
 void save_score();
 void sort_high_scores();
 void print_dead_buggy();
+void print_stars();
 
 // GLOBAL VARIABLES
 char keypress;
@@ -70,6 +71,10 @@ int main(){
       clrscr(); // clear screen
       print_road(); // print road
 
+      if(score%3 == 0){
+        print_stars();
+      }
+
       if(kb_ready()){ // get sunbuggy movement
         keypress=(char)getch();
       }
@@ -101,6 +106,32 @@ int main(){
 }
 
 // FUNCTIONS
+void print_stars(){
+  textcolor(WHITE);
+  gotoxy(10,9);
+  printf("*");
+  gotoxy(2,6);
+  printf("*");
+  gotoxy(20,17);
+  printf("*");
+  gotoxy(38,5);
+  printf("*");
+  gotoxy(50,8);
+  printf("*");
+  gotoxy(30,20);
+  printf("*");
+  gotoxy(40,10);
+  printf("*");
+  gotoxy(60,112);
+  printf("*");
+  gotoxy(55,19);
+  printf("*");
+  gotoxy(45,16);
+  printf("*");
+  gotoxy(70,2);
+  printf("*");
+}
+
 void sort_high_scores(){
   int i, j, temp;
   for(i=0; i<3; i++){
@@ -179,6 +210,7 @@ void print_statistices(){
 }
 
 void print_game_over(){
+  print_stars();
 
   gotoxy(30, 19);
   printf("press 'r' to restart\n");
@@ -237,21 +269,50 @@ void print_obstacles(){
 }
 
 void print_jump_buggy(){
-  if(carAni){
-    gotoxy(60,y); textcolor(LIGHTRED);
-    printf(" ||||\n");
-    gotoxy(60,y+1); textcolor(RED);
-    printf("O---O\n");
-    carAni = 0;
+  if(level < 3){
+    if(carAni){
+      gotoxy(60,y); textcolor(LIGHTRED);
+      printf(" ||||\n");
+      gotoxy(60,y+1); textcolor(RED);
+      printf("O---O\n");
+      carAni = 0;
+    }else{
+      gotoxy(60,y); textcolor(RED);
+      printf(" ||||\n");
+      gotoxy(60,y+1); textcolor(LIGHTRED);
+      printf("/---/\n");
+      carAni = 1;
+    }
   }else{
-    gotoxy(60,y); textcolor(RED);
-    printf(" ||||\n");
-    gotoxy(60,y+1); textcolor(LIGHTRED);
-    printf("/---/\n");
-    carAni = 1;
-  }
-}
+    if(carAni == 0){
+      gotoxy(60,y); textcolor(LIGHTRED);
+      printf("  <___>");
+      gotoxy(60,y+1); textcolor(RED);
+      printf("(|)---(|)");
+      carAni++;
+    }else if(carAni == 1){
+      gotoxy(60,y); textcolor(LIGHTRED);
+      printf("  <___>");
+      gotoxy(60,y+1); textcolor(RED);
+      printf("(\\)---(\\)");
+      carAni++;
+    }else if(carAni == 3){
+      gotoxy(60,y); textcolor(LIGHTRED);
+      printf("  <___>");
+      gotoxy(60,y+1); textcolor(RED);
+      printf("(-)---(-)");
+      carAni++;
+    }else{
+      gotoxy(60,y); textcolor(LIGHTRED);
+      printf("  <___>");
+      gotoxy(60,y+1); textcolor(RED);
+      printf("(/)---(/)");
+      carAni = 0;
+    }
 
+  }
+
+}
 
 void print_dead_buggy(){
     gotoxy(50,y); textcolor(RED);
@@ -311,7 +372,6 @@ void print_HomeScreen(){
 
   print_road();
 }
-
 
 void print_road(){
     textcolor(LIGHTRED);
